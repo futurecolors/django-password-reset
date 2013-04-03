@@ -67,17 +67,19 @@ class Recover(SaltMixin, generic.FormView):
         })
         return kwargs
 
-    def send_notification(self):
-        context = {
+    def get_email_context(self):
+        return {
             'site': RequestSite(self.request),
             'user': self.user,
             'token': signing.dumps(self.user.pk, salt=self.salt),
             'secure': self.request.is_secure(),
         }
+
+    def send_notification(self):
         send_templated_mail(email_template=self.email_template,
                             from_email=settings.DEFAULT_FROM_EMAIL,
                             recipient_list=[self.user.email],
-                            context=context)
+                            context=self.get_email_context())
 
     def form_valid(self, form):
         self.user = form.cleaned_data['user']
