@@ -35,11 +35,9 @@ Attributes
 
 * ``template_name``: defaults to ``password_reset/recovery_form.html``.
 
-* ``email_template_name``: the template to use for sending the reset link by
-  email. Default: ``password_reset/recovery_email.txt``.
-
-* ``email_subject_template_name``: the template to use for generating the
-  email subject. Defaults to ``password_reset/recovery_email_subject.txt``.
+* ``email_template``: the template to use for sending the reset link by
+  email. Default: ``password_reset/recovery_letter.html``. Django-templated-email
+  is used to render and send the email
 
 * ``search_fields``: the fields to search for on the ``User`` model. Default
   is ``['username', 'email']``, you can restrict it to ``['username']`` or

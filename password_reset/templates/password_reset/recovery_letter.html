@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load url from future %}
+
+{% block subject %}{% blocktrans with domain=site.domain %}Password recovery on {{ domain }}{% endblocktrans %}{% endblock %}
+
+{% block html %}
+    <p>{% blocktrans with username=user.username %}Dear {{ username }},{% endblocktrans %}</p>
+
+    <p>{% blocktrans with domain=site.domain %}You <i>or someone pretending to be you</i> has requested a password reset on {{ domain }}.{% endblocktrans %}</p>
+
+    <p>{% trans "You can set your new password by following this link:" %}<br/>
+       <a href="http{% if secure %}s{% endif %}://{{ site.domain }}{% url 'password_reset_reset' token %}">
+        http{% if secure %}s{% endif %}://{{ site.domain }}{% url "password_reset_reset" token %}</a>
+    </p>
+
+    <p>{% trans "If you don't want to reset your password, simply ignore this email and it will stay unchanged." %}</p>
+{% endblock %}

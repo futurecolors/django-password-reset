@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from distutils.core import setup
 from setuptools import find_packages
 
@@ -16,6 +16,7 @@ setup(
     long_description=open('README.rst').read(),
     install_requires=[
         'Django>=1.4',
+        'django-templated-email==0.4.7',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

@@ -151,7 +151,7 @@ class ViewTests(TestCase):
 
         self.assertTrue('Dear foo,' in message.body)
 
-        url = message.body.split('http://testserver')[1].split('\n', 1)[0]
+        url = message.body.split('http://testserver')[1].split('"', 1)[0]
 
         response = self.client.get(url)
         self.assertContains(response, 'New password (confirm)')

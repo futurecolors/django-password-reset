@@ -4,15 +4,14 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import RequestSite
 from django.core import signing
-from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404
-from django.template import loader
 from django.utils import timezone
 from django.views import generic
 
 from .forms import PasswordRecoveryForm, PasswordResetForm
+from password_reset.mail import send_templated_mail
 
 
 class SaltMixin(object):
@@ -50,8 +49,7 @@ class Recover(SaltMixin, generic.FormView):
     case_sensitive = True
     form_class = PasswordRecoveryForm
     template_name = 'password_reset/recovery_form.html'
-    email_template_name = 'password_reset/recovery_email.txt'
-    email_subject_template_name = 'password_reset/recovery_email_subject.txt'
+    email_template = 'password_reset/recovery_letter.html'
     search_fields = ['username', 'email']
 
     def get_success_url(self):
@@ -76,12 +74,10 @@ class Recover(SaltMixin, generic.FormView):
             'token': signing.dumps(self.user.pk, salt=self.salt),
             'secure': self.request.is_secure(),
         }
-        body = loader.render_to_string(self.email_template_name,
-                                       context).strip()
-        subject = loader.render_to_string(self.email_subject_template_name,
-                                          context).strip()
-        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL,
-                  [self.user.email])
+        send_templated_mail(email_template=self.email_template,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[self.user.email],
+                            context=context)
 
     def form_valid(self, form):
         self.user = form.cleaned_data['user']
