@@ -4,10 +4,10 @@ from setuptools import find_packages
 
 
 setup(
-    name='django-password-reset',
+    name='django-password-reset-fc',
     version=__import__('password_reset').__version__,
-    author='Bruno Renie',
-    author_email='bruno@renie.fr',
+    author='Ilya Baryshev',
+    author_email='baryshev@futurecolors.ru',
     packages=find_packages(),
     include_package_data=True,
     url='https://github.com/brutasse/django-password-reset',
@@ -15,8 +15,10 @@ setup(
     description='Class-based views for password reset.',
     long_description=open('README.rst').read(),
     install_requires=[
-        'Django>=1.4',
         'django-templated-email==0.4.7',
+    ],
+    tests_require=[
+        'django>=1.4',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -26,7 +28,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
     ],
     test_suite='runtests.runtests',
     zip_safe=False,
