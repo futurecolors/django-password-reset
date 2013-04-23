@@ -42,5 +42,11 @@ install django-password-reset==dev``.
 Changelog
 ---------
 
-0.6 - fail_noexistent_user option to make resetting password more secure
-0.5 - Added django-templated-email for sending email
+0.6.x
+~~~~~
+* fail_noexistent_user option to make resetting password more secure
+* inactive users can not reset password
+
+0.5.x
+~~~~~
+* Added django-templated-email for sending email

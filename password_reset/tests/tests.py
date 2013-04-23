@@ -134,6 +134,16 @@ class FormTests(TestCase):
         form = PasswordRecoveryForm(fail_noexistent_user=True, data={'username_or_email': 'foo@bar.com'})
         self.assertFalse(form.is_valid())
 
+    def test_inactive_user(self):
+        user = User.objects.create_user('foo', 'bar@baz.com', 'pass')
+        form = PasswordRecoveryForm(data={'username_or_email': 'bar@baz.com'})
+        self.assertTrue(form.is_valid())
+
+        user.is_active = False
+        user.save()
+        form = PasswordRecoveryForm(data={'username_or_email': 'bar@baz.com'})
+        self.assertFalse(form.is_valid())
+
 
 class ViewTests(TestCase):
     def setUp(self):

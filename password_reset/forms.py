@@ -37,6 +37,10 @@ class PasswordRecoveryForm(forms.Form):
         username = self.cleaned_data['username_or_email']
         cleaner = getattr(self, 'get_user_by_%s' % self.label_key)
         self.cleaned_data['user'] = cleaner(username)
+
+        if self.cleaned_data['user'] and not self.cleaned_data['user'].is_active:
+            raise forms.ValidationError(_("This account is inactive."))
+
         return username
 
     def get_user_by_username(self, username):
