@@ -123,6 +123,17 @@ class FormTests(TestCase):
         form.save()
         self.assertNotEqual(user.password, old_sha)
 
+    def test_fail_noexistent_user(self):
+        form = PasswordRecoveryForm(fail_noexistent_user=False, data={'username_or_email': 'foo@bar.com'})
+        self.assertTrue(form.is_valid())
+
+        form = PasswordRecoveryForm(fail_noexistent_user=False, search_fields=('email',),
+                                    data={'username_or_email': 'foobar.com'})
+        self.assertFalse(form.is_valid())
+
+        form = PasswordRecoveryForm(fail_noexistent_user=True, data={'username_or_email': 'foo@bar.com'})
+        self.assertFalse(form.is_valid())
+
 
 class ViewTests(TestCase):
     def setUp(self):
@@ -166,6 +177,15 @@ class ViewTests(TestCase):
 
         self.assertTrue(User.objects.get().check_password('foo'))
 
+    def test_fail_noexistent_user(self):
+        url = reverse('secure_recover')
+        response = self.client.get(url)
+        self.assertContains(response, 'Username or Email')
+
+        response = self.client.post(url, {'username_or_email': 'test'}, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_invalid_reset_link(self):
         url = reverse('password_reset_reset', args=['foobar-invalid'])
 
@@ -182,7 +202,7 @@ class ViewTests(TestCase):
         response = self.client.post(url, {'username_or_email': 'foo'})
         try:
             self.assertContains(response, "Enter a valid email address")
-        except AssertionError:
+        except AssertionError:  # pragma: no cover
             self.assertContains(response, "Enter a valid e-mail address")
 
         response = self.client.post(url, {'username_or_email': 'foo@ex.com'})

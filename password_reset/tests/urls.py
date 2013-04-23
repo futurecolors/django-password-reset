@@ -10,4 +10,6 @@ urlpatterns += patterns(
         name='username_recover'),
     url(r'^insensitive_recover/$', views.insensitive_recover,
         name='insensitive_recover'),
+    url(r'^secure_recover/$', views.secure_recover,
+        name='secure_recover'),
 )

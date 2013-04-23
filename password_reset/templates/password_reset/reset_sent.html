@@ -4,5 +4,9 @@
 {% block title %}{% trans "Password recovery sent" %}{% endblock %}
 
 {% block content %}
+    {% if email %}
 	<p>{% blocktrans with ago=timestamp|timesince %}An email was sent to <strong>{{ email }}</strong> {{ ago }} ago. Use the link in it to set a new password.{% endblocktrans %}</p>
+    {% else %}
+    <p>{% blocktrans %}An email with a link was sent to your email if it was provided correctly.{% endblocktrans %}</p>
+    {% endif %}
 {% endblock %}

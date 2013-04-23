@@ -31,6 +31,7 @@ def loads_with_timestamp(value, salt):
 
 
 class RecoverDone(SaltMixin, generic.TemplateView):
+    fail_noexistent_user = True
     template_name = "password_reset/reset_sent.html"
 
     def get_context_data(self, **kwargs):
@@ -40,7 +41,8 @@ class RecoverDone(SaltMixin, generic.TemplateView):
                 self.kwargs['signature'], salt=self.url_salt,
             )
         except signing.BadSignature:
-            raise Http404
+            if self.fail_noexistent_user:
+                raise Http404
         return ctx
 recover_done = RecoverDone.as_view()
 
@@ -51,6 +53,7 @@ class Recover(SaltMixin, generic.FormView):
     template_name = 'password_reset/recovery_form.html'
     email_template = 'password_reset/recovery_letter.html'
     search_fields = ['username', 'email']
+    fail_noexistent_user = True
 
     def get_success_url(self):
         return reverse('password_reset_sent', args=[self.mail_signature])
@@ -64,6 +67,7 @@ class Recover(SaltMixin, generic.FormView):
         kwargs.update({
             'case_sensitive': self.case_sensitive,
             'search_fields': self.search_fields,
+            'fail_noexistent_user': self.fail_noexistent_user,
         })
         return kwargs
 
@@ -83,17 +87,21 @@ class Recover(SaltMixin, generic.FormView):
 
     def form_valid(self, form):
         self.user = form.cleaned_data['user']
-        self.send_notification()
-        if (
-            len(self.search_fields) == 1 and
-            self.search_fields[0] == 'username'
-        ):
-            # if we only search by username, don't disclose the user email
-            # since it may now be public information.
-            email = self.user.username
+        if self.user:
+            self.send_notification()
+            if (
+                len(self.search_fields) == 1 and
+                self.search_fields[0] == 'username'
+            ):
+                # if we only search by username, don't disclose the user email
+                # since it may now be public information.
+                email = self.user.username
+            else:
+                email = self.user.email
+            self.mail_signature = signing.dumps(email, salt=self.url_salt)
         else:
-            email = self.user.email
-        self.mail_signature = signing.dumps(email, salt=self.url_salt)
+            # we never send anything, but user should not know that
+            self.mail_signature = signing.dumps(form.cleaned_data['username_or_email'], salt='fake-send')
         return super(Recover, self).form_valid(form)
 recover = Recover.as_view()
 

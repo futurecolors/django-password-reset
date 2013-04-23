@@ -10,6 +10,7 @@ class PasswordRecoveryForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.case_sensitive = kwargs.pop('case_sensitive', True)
+        self.fail_noexistent_user = kwargs.pop('fail_noexistent_user', True)
         search_fields = kwargs.pop('search_fields', ('username', 'email'))
         super(PasswordRecoveryForm, self).__init__(*args, **kwargs)
 
@@ -43,7 +44,8 @@ class PasswordRecoveryForm(forms.Form):
         try:
             user = User.objects.get(**{key: username})
         except User.DoesNotExist:
-            raise forms.ValidationError(_("Sorry, this user doesn't exist."))
+            if self.fail_noexistent_user:
+                raise forms.ValidationError(_("Sorry, this user doesn't exist."))
         return user
 
     def get_user_by_email(self, email):
@@ -52,7 +54,10 @@ class PasswordRecoveryForm(forms.Form):
         try:
             user = User.objects.get(**{key: email})
         except User.DoesNotExist:
-            raise forms.ValidationError(_("Sorry, this user doesn't exist."))
+            if self.fail_noexistent_user:
+                raise forms.ValidationError(_("Sorry, this user doesn't exist."))
+            else:
+                user = None
         return user
 
     def get_user_by_both(self, username):
@@ -63,9 +68,15 @@ class PasswordRecoveryForm(forms.Form):
         try:
             user = User.objects.get(filters)
         except User.DoesNotExist:
-            raise forms.ValidationError(_("Sorry, this user doesn't exist."))
+            if self.fail_noexistent_user:
+                raise forms.ValidationError(_("Sorry, this user doesn't exist."))
+            else:
+                user = None
         except User.MultipleObjectsReturned:
-            raise forms.ValidationError(_("Unable to find user."))
+            if self.fail_noexistent_user:
+                raise forms.ValidationError(_("Unable to find user."))
+            else:
+                user = None
         return user
 
 

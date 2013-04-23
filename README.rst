@@ -2,8 +2,10 @@ Django-password-reset
 =====================
 
 .. image:: https://travis-ci.org/futurecolors/django-password-reset.png?branch=master
-   :alt: Build Status
    :target: https://travis-ci.org/futurecolors/django-password-reset
+
+.. image:: https://coveralls.io/repos/futurecolors/django-password-reset/badge.png?branch=master
+    :target: https://coveralls.io/r/futurecolors/django-password-reset/
 
 Class-based views for password reset, the usual "forget password?" workflow:
 
@@ -37,7 +39,8 @@ install django-password-reset==dev``.
 
 .. _in-development version: https://github.com/brutasse/django-password-reset/tarball/master#egg=django-password-reset-dev
 
-Bugs
-----
+Changelog
+---------
 
-Really? Oh well... Please Report. Or better, fix :)
+0.6 - fail_noexistent_user option to make resetting password more secure
+0.5 - Added django-templated-email for sending email
