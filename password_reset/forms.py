@@ -11,6 +11,7 @@ class PasswordRecoveryForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.case_sensitive = kwargs.pop('case_sensitive', True)
         self.fail_noexistent_user = kwargs.pop('fail_noexistent_user', True)
+        self.fail_inactive_user = kwargs.pop('fail_inactive_user', True)
         search_fields = kwargs.pop('search_fields', ('username', 'email'))
         super(PasswordRecoveryForm, self).__init__(*args, **kwargs)
 
@@ -38,7 +39,7 @@ class PasswordRecoveryForm(forms.Form):
         cleaner = getattr(self, 'get_user_by_%s' % self.label_key)
         self.cleaned_data['user'] = cleaner(username)
 
-        if self.cleaned_data['user'] and not self.cleaned_data['user'].is_active:
+        if self.fail_inactive_user and self.cleaned_data['user'] and not self.cleaned_data['user'].is_active:
             raise forms.ValidationError(_("This account is inactive."))
 
         return username

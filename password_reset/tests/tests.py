@@ -144,6 +144,9 @@ class FormTests(TestCase):
         form = PasswordRecoveryForm(data={'username_or_email': 'bar@baz.com'})
         self.assertFalse(form.is_valid())
 
+        form = PasswordRecoveryForm(data={'username_or_email': 'bar@baz.com'}, fail_inactive_user=False)
+        self.assertTrue(form.is_valid())
+
 
 class ViewTests(TestCase):
     def setUp(self):
@@ -167,8 +170,7 @@ class ViewTests(TestCase):
 
         message = mail.outbox[0]
 
-        self.assertEqual(message.subject,
-                         u'Password recovery on testserver')
+        self.assertEqual(message.subject, u'Password recovery on testserver')
 
         self.assertTrue('Dear foo,' in message.body)
 

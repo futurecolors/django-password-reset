@@ -45,7 +45,7 @@ Changelog
 0.6.x
 ~~~~~
 * fail_noexistent_user option to make resetting password more secure
-* inactive users can not reset password
+* fail_inactive_user option to restrict inactive users from resetting password
 
 0.5.x
 ~~~~~
